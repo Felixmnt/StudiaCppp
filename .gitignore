@@ -1,32 +1,613 @@
-# Prerequisites
-*.d
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+#include <time.h>
+#include <ctime>
+#include <string>
+#include <stdlib.h>
+#include <iostream>
+#include <cmath>
 
-# Precompiled Headers
-*.gch
-*.pch
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+class samochod {
+public:
+    int a;
+    float b;
 
-# Fortran module files
-*.mod
-*.smod
+    samochod(int c, float d) {
+        a = c;
+        b = d;
+    }
+    samochod() {}
+};
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+template<typename type>
+class treeNode {
+public:
+    type data;
+     int indeks=0;
+    treeNode<type>* parent;
+    treeNode<type>* childLeft;
+    treeNode<type>* childRight;
+    bool color;
+    //black==true
 
-# Executables
-*.exe
-*.out
-*.app
+    treeNode<type>(type a) {
+        //indeks = ind;
+        color = false;
+        data = a;
+        parent = nullptr;
+        childLeft = nullptr;
+        childRight = nullptr;
+    }
+    treeNode<type>() {
+        color = true;
+        parent = nullptr;
+        childLeft = nullptr;
+        childRight = nullptr;
+    }
+
+    ~treeNode<type>() {
+        //clear
+    }
+
+};
+
+
+
+
+int cmpSaa(samochod* r, samochod* n) {
+    int o = 0;
+    if (r->a < n->a) {
+        o = -1;
+    }
+    else if (r->a > n->a) {
+        o = 1;
+    }
+    return o;
+}
+int cmpSa(samochod r, samochod n) {
+    int a = 0;
+    if (r.a < n.a) {
+        a = -1;
+    }
+    else if (r.a > n.a) {
+        a = 1;
+    }
+    return a;
+}
+
+std::string toStringS(samochod au) {
+    std::string s = "";
+    s = std::to_string(au.a);
+    s += std::to_string(au.b);
+    return s;
+}
+
+
+int cmpInt(int r, int n) {
+    int t = 0;
+    if (r < n) {
+        t = -1;
+    }
+    else if (r > n) {
+        t = 1;
+    }
+    return t;
+}
+
+
+template<typename type>
+class listNode {
+public:
+    type data;
+    listNode<type>* next;
+    listNode<type>* prev;
+
+    listNode<type>(type a) {
+        data = a;
+        next = nullptr;
+        prev = nullptr;
+    }
+
+    ~listNode<type>() {
+
+    }
+};
+
+template<typename type>
+class list {
+public:
+
+    int size = 0;
+    listNode<type>* head;
+    listNode<type>* tail;
+    listNode<type>* temp;
+
+    list() {
+        head = nullptr;
+        tail = nullptr;
+        size = 0;
+    }
+    ~list() {
+        //deleteAll();
+    }
+
+
+    std::string toString(std::string(*toStr)(type)) {
+        std::string str = "";
+        listNode<type>* temp = nullptr;
+        temp = head;
+
+        if (size == 0) {
+            str = "nima:(";
+            return (str);
+        }
+        if (size < 4) {
+            for (int i = 0; i < size; i++)
+            {
+                str = str + " " + toStr(temp->data);
+                temp = temp->next;
+            }
+            return (str);
+        }
+
+        for (int i = 0; i < 2; i++)
+        {
+            str = str + " " + toStr(temp->data);
+            temp = temp->next;
+        }
+
+        temp = tail->prev;
+
+        for (int j = size - 2; j < size; j++)
+        {
+            str = str + " " + toStr(temp->data);
+            temp = temp->next;
+        }
+
+        return(str);
+
+    }
+
+
+    void addAtTail(type data) {
+        listNode<type>* node = new listNode<type>(data);
+        if (size == 0) {
+            head = node;
+            tail = node;
+        }
+        else {
+            tail->next = node;
+            node->prev = tail;
+            tail = node;
+        }
+        size++;
+
+    }
+
+
+};
+
+template<typename type>
+class BinaryTree {
+public:
+
+    int size = 0;
+    // int level = 0;
+
+    treeNode<type>* Root;
+    treeNode<type>* nil = new treeNode<type>();
+
+
+    BinaryTree() {
+        nil->color = false;
+        nil->parent = nullptr;
+        nil->childLeft = nullptr;
+        nil->childRight = nullptr;
+        Root = nullptr;
+        size = 0;
+
+
+    }
+
+
+
+
+    void addElement(type data, int(*cmp)(type, type)) {
+        treeNode<type>* node = new treeNode<type>(data);
+
+        nil->color = true;
+        if (size == 0) {
+            Root = node;
+            Root->childLeft = nil;
+            Root->childRight = nil;
+            Root->parent = nullptr;
+            node->indeks = size;
+            size++;
+        }
+        else {
+            treeNode<type>* temp;
+            temp = Root;
+
+            while (temp != nil) {
+                int a = cmp(temp->data, data);
+                if (a < 0) {
+                    if (temp->childRight == nil) {
+                        temp->childRight = node;
+                        node->parent = temp;
+                        node->indeks = size;
+                        node->childLeft=nil;
+                        node->childRight=nil;
+                        size++;
+                        break;
+                    }
+                    temp = temp->childRight;
+
+
+                }
+                else if(a>0) {
+                    if (temp->childLeft == nil) {
+                        temp->childLeft = node;
+                        node->parent = temp;
+                        node->indeks = size;
+                        node->childLeft=nil;
+                        node->childRight=nil;
+                        size++;
+                        break;
+                    }
+                    temp = temp->childLeft;
+                }else if(a==0) {
+                delete node;
+                return;
+                }
+            }
+        }
+
+
+        if(node==Root) {
+            node->color = true;
+        }
+
+        while(node!=Root && node->parent->color == false) {
+
+            //sprawdzanie kto jest wujkiem
+            if(node->parent==node->parent->parent->childLeft) {
+                treeNode<type>* un = node->parent->parent->childRight;
+                //case1 uncle red
+                    if(un->color ==false) {
+                        node->parent->color = true;
+                        node->parent->parent->color = false;
+                        node->parent->parent->childRight->color = true;
+                        node= node->parent->parent;
+                    }else {
+                        if(node==node->parent->childRight) {
+                            node=node->parent;
+                            rotateLeft(node);
+                        }
+                        node->parent->color = true;
+                        node->parent->parent->color = false;
+                        rotateRight(node->parent->parent);
+                    }
+
+            }else {
+                treeNode<type>* un = node->parent->parent->childLeft;
+                //case1 uncle red
+
+                if(un->color ==false) {
+                    node->parent->color = true;
+                    node->parent->parent->color = false;
+                    node->parent->parent->childLeft->color = true;
+                    node=node->parent->parent;
+                    ////
+                }else {
+                    if(node==node->parent->childLeft) {
+                        node=node->parent;
+                        rotateRight(node);
+                    }
+                    node->parent->color = true;
+                    node->parent->parent->color = false;
+                    rotateLeft(node->parent->parent);
+                    ///case2
+                }
+
+            }
+if(Root->color == false)Root->color=true;
+return;
+        }
+
+    }
+void rotateRight(treeNode<type>* node) {
+
+        treeNode<type>* temp=node->childLeft;
+        node->childLeft= temp->childRight;
+        if (node->childLeft != nil) {
+            node->childLeft->parent = node;
+        }
+        temp->parent=node->parent;
+        if (temp->parent != nullptr) {
+            if(node->parent->childRight == node) {
+                temp->parent->childRight = temp;
+            }else {
+                temp->parent->childLeft = temp;
+            }
+        }else {
+            Root=temp;
+        }
+        node->parent = temp;
+        temp->childRight = node;
+
+    }
+
+void rotateLeft(treeNode<type>* node) {
+
+        treeNode<type>* temp=node->childRight;
+        node->childRight= temp->childLeft;
+
+        if (node->childRight != nil) {
+            node->childRight->parent = node;
+        }
+        temp->parent=node->parent;
+        if (temp->parent != nullptr) {
+            if(node->parent->childLeft == node) {
+                temp->parent->childLeft = temp;
+            }else {
+                temp->parent->childRight = temp;
+            }
+        }else {
+            Root=temp;
+        }
+        node->parent = temp;
+        temp->childLeft = node;
+    }
+
+
+
+    void usunTo() {
+        list <treeNode<type>*> l;
+        inOrder(Root,&l);
+        listNode<treeNode<type>*>* temp=l.head;
+        for(int i=0;i<l.size-1;i++) {
+            delete temp->data;
+            temp=temp->next;
+            size--;
+        }
+
+
+    }
+
+    treeNode<type>* findElemnet(type data, int(*cmp)(type, type)) {
+        treeNode<type>* temp = Root;
+
+        while (temp != nil) {
+
+            int aq = cmp(temp->data, data);
+            switch (aq) {
+            case-1:
+                temp = temp->childRight;
+                break;
+            case 1:
+                temp = temp->childLeft;
+                break;
+            case 0:
+                return (temp);
+            default:
+                return nullptr;
+            }
+        }
+        return nullptr;
+
+    }
+
+
+    void preOrder(treeNode<type>* t, list<treeNode<type>*>* l) {
+
+        if (t != nil) {
+            l->addAtTail(t);
+
+            preOrder(t->childLeft, l);
+
+            preOrder(t->childRight, l);
+        }
+    }
+
+    void inOrder(treeNode<type>* t, list<treeNode<type>*>* l) {
+
+        if (t != nil) {
+            inOrder(t->childLeft, l);
+
+            l->addAtTail(t);
+
+            inOrder(t->childRight, l);
+        }
+    }
+
+
+    int maxDepth(treeNode<type>* node) {
+        if (node == nil)
+            return 0;
+
+
+            int lDepth = maxDepth(node->childLeft);
+            int rDepth = maxDepth(node->childRight);
+
+            return std::max(lDepth, rDepth) + 1;
+    }
+
+    std::string toStringg(std::string(*tostri)(type)) {
+        std::string s = " ";
+        list <treeNode<type>*> ll;
+        preOrder(Root, &ll);
+        //listNode<type>* te;
+        listNode<treeNode<type>*>* temp = ll.head;
+
+
+
+        if (size == 0) {
+            s = "nima";
+            return s;
+        }
+
+        if (size > 6) {
+            //s += " data:" + tostri(temp->data->data);
+            for (int i = 0; i < 3; i++) {
+                if(temp->data->color==false) {
+                    s+="|RED|  ";
+                }else {
+                    s+="|BLACK|  ";
+                }
+                s +="index:"+std::to_string(temp->data->indeks) + "\n data:"+tostri(temp->data->data);
+
+                if (temp->data->parent != nullptr) {
+                    s += " p:" + tostri(temp->data->parent->data);
+                }
+                else {
+                    s += " p: nullptr";
+                }
+
+                if (temp->data->childLeft != nil) {
+                    s += " child b:" + tostri(temp->data->childLeft->data);
+                }
+                else {
+                    s += " child  B: nullptr";
+                }
+
+                if (temp->data->childRight != nil) {
+                    s += " child L:" + tostri(temp->data->childRight->data) + "\n";
+                }
+                else {
+                    s += " child L:nullptr\n";
+                }
+                temp = temp->next;
+            }
+            temp = ll.tail;
+            for (int j = size - 3; j < size; j++) {
+                if(temp->data->color==false) {
+                    s+="|RED| ";
+                }else {
+                    s+="|BLACK|  ";
+                }
+
+                s += "index:"+std::to_string(temp->data->indeks)+"\n data:" + tostri(temp->data->data);
+
+                if (temp->data->parent != nullptr) {
+                    s += " p:" + tostri(temp->data->parent->data);
+                }
+                else {
+                    s += " p: nullptr";
+                }
+
+                if (temp->data->childLeft != nil) {
+                    s += " child b:" + tostri(temp->data->childLeft->data);
+                }
+                else {
+                    s += " child  B: nullptr";
+                }
+
+                if (temp->data->childRight != nil) {
+                    s += " child L:" + tostri(temp->data->childRight->data) + "\n";
+                }
+                else {
+                    s += " child L:nullptr\n";
+                }
+                temp = temp->prev;
+
+            }
+
+            return s;
+        }
+        else {
+            while (temp->next != nullptr) {
+                s += " data:" + tostri(temp->data->data);
+
+                if (temp->data->parent != nullptr) {
+                    s += " p:" + tostri(temp->data->parent->data);
+                }
+                else {
+                    s += " p: nullptr";
+                }
+
+                if (temp->data->childLeft != nil) {
+                    s += " child b:" + tostri(temp->data->childLeft->data);
+                }
+                else {
+                    s += " child  B: nullptr";
+                }
+
+                if (temp->data->childRight != nil) {
+                    s += " child L:" + tostri(temp->data->childRight->data) + "\n";
+                }
+                else {
+                    s += " child L:nullptr\n";
+                }
+
+                temp = temp->next;
+            }
+            return s;
+        }
+    }
+
+
+
+
+};
+
+int main() {
+
+
+    const int maxOrder = 6;
+
+    for (int i = 1; i <= maxOrder; i++) {
+        BinaryTree<samochod>* tree = new BinaryTree<samochod>();
+        samochod so;
+        const int n = pow(10, i);
+        clock_t t1 = clock();
+
+        for (int j = 0; j < n; j++) {
+            //samochod so;
+            so.a = ((rand()<<15)+rand()) % 100;
+            so.b = ((rand()<<15)+rand()) % 100;
+            std::cout << so.a << " " << so.b << "\n";
+
+            tree->addElement(so, cmpSa);
+            std::cout << tree->toStringg(toStringS) << std::endl<<std::endl;
+
+        }
+        int h = tree->maxDepth(tree->Root);
+        clock_t t2 = clock();
+        double time1 = t2 - t1;
+        std::cout << "Max Depth: " << h << "\n";
+        std::cout<<"log:"<<(h-1)/log2(tree->size+1)<<"\n";
+        std::cout << " czas dodawania:" << time1 / CLOCKS_PER_SEC << " sec\n\n\n" << std::endl;
+
+
+        const int m = pow(10, 4);
+        int hits = 0;
+        t1 = clock();
+        //tree->clear();
+        //samochod so;
+        for (int j = 0; j < m; j++) {
+
+            so.a = ((rand()<<15)+rand()) % 10000001;
+            so.b = ((rand()<<15)+rand()) % 10000001;
+            treeNode<samochod>* result = tree->findElemnet(so, cmpSa);
+            if (result != nullptr) {
+                hits++;
+            }
+
+        }
+        //std::cout << " trafienia:" << hits << std::endl;
+        t2 = clock();
+        time1 = t2 - t1;
+
+
+        std::cout << tree->toStringg(toStringS) << std::endl;
+        std::cout << " trafienia:" << hits << std::endl;
+        std::cout << " czas wyszukiwania:" << time1 / CLOCKS_PER_SEC << "sec\n" << std::endl;
+        tree->usunTo();
+
+    }
+
+
+
+
+    return 0;
+}
